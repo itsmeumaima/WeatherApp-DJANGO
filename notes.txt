@@ -1,0 +1,6 @@
+create a project name weather project and then go to that folder with cd commad
+now create the weather app
+weather project settings.py file add the app name in the installed_apps.
+create the urls.py in the app folder and then do the basic settings of the urls
+and also include the app urls.py nane in the main urls file.
+create a templates folder and index.html
