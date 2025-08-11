@@ -4,156 +4,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background-image: url('https://images.unsplash.com/photo-1534088568595-a066f810d9a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-image: url('{{ city_image }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             padding: 20px;
+            position: relative;
         }
-        
-        .weather-app {
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+        /* Add overlay for better text readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            z-index: 1;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             padding: 30px;
             text-align: center;
-            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-        
+
+        .weather-card:hover {
+            transform: translateY(-5px);
+        }
+
         h1 {
-            color: #333;
+            color: #2d3436;
             margin-bottom: 25px;
-            font-size: 24px;
-            font-weight: normal;
+            font-size: 2.2rem;
         }
-        
+
+        h1 i {
+            color: #fdcb6e;
+            margin-right: 10px;
+        }
+
         .search-container {
             display: flex;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            position: relative;
         }
-        
+
         .city-input {
             flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-right: none;
-            font-size: 16px;
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .search-btn {
-            background-color: #4285f4;
-            color: white;
+            padding: 15px 20px;
             border: none;
-            padding: 12px 20px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .city-input:focus {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 15px rgba(116, 185, 255, 0.5);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #74b9ff;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            color: white;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
         }
-        
+
         .search-btn:hover {
-            background-color: #3367d6;
+            background: #0984e3;
         }
-        
+
         .weather-info {
-            display: none;
             margin-top: 20px;
         }
-        
-        .city-name {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .temperature {
-            font-size: 36px;
-            color: #4285f4;
+
+        .city-name h2 {
+            color: #2d3436;
+            font-size: 1.8rem;
             margin-bottom: 5px;
         }
-        
-        .description {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 15px;
+
+        .date {
+            color: #636e72;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
         }
-        
-        .details {
+
+        .weather-main {
             display: flex;
             justify-content: space-around;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            align-items: center;
+            margin: 20px 0;
         }
-        
-        .detail-item {
-            text-align: center;
+
+        .temperature h2 {
+            font-size: 4rem;
+            color: #0984e3;
+            font-weight: 300;
         }
-        
-        .detail-label {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 3px;
+
+        .weather-icon img {
+            width: 120px;
+            height: 120px;
         }
-        
-        .detail-value {
-            font-size: 14px;
-            color: #333;
+
+        .weather-description {
+            margin-top: 20px;
         }
-        
-        .error {
-            color: #ea4335;
-            margin-top: 15px;
-            display: none;
+
+        .weather-description p {
+            color: #2d3436;
+            font-size: 1.2rem;
+            text-transform: capitalize;
+        }
+
+        .placeholder {
+            padding: 40px 0;
+            color: #636e72;
+            font-style: italic;
+        }
+
+        @media (max-width: 480px) {
+            .weather-card {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .temperature h2 {
+                font-size: 3rem;
+            }
+            
+            .weather-icon img {
+                width: 90px;
+                height: 90px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="weather-app">
-        <h1>Weather App</h1>
-        
-        <div class="search-container">
-            <input type="text" class="city-input" placeholder="Enter city name">
-            <button class="search-btn">Search</button>
-        </div>
-        
-        <div class="error">City not found</div>
-        
-        <div class="weather-info">
-            <div class="city-name">New York</div>
-            <div class="temperature">22°C</div>
-            <div class="description">Clear Sky</div>
+    <div class="container">
+        <div class="weather-card">
+            <h1><i class="fas fa-cloud-sun"></i> Weather App</h1>
             
-            <div class="details">
-                <div class="detail-item">
-                    <div class="detail-label">Humidity</div>
-                    <div class="detail-value">65%</div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="search-container">
+                    <input type="text" class="city-input" name="city" placeholder="Enter city name" required>
+                    <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
                 </div>
-                <div class="detail-item">
-                    <div class="detail-label">Wind</div>
-                    <div class="detail-value">12 km/h</div>
+            </form>
+            
+            <div class="weather-info">
+                {% if city %}
+                <div class="city-name">
+                    <h2>{{ city }}</h2>
+                    <p class="date">{{ day }}</p>
                 </div>
-                <div class="detail-item">
-                    <div class="detail-label">Pressure</div>
-                    <div class="detail-value">1013 hPa</div>
+                
+                <div class="weather-main">
+                    <div class="temperature">
+                        <h2>{{ temp }}°C</h2>
+                    </div>
+                    <div class="weather-icon">
+                        <img src="http://openweathermap.org/img/w/{{ icon }}.png" alt="Weather icon">
+                    </div>
                 </div>
+                
+                <div class="weather-description">
+                    <p>{{ description }}</p>
+                </div>
+                {% else %}
+                <div class="placeholder">
+                    <p>Enter a city name to get weather information</p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
